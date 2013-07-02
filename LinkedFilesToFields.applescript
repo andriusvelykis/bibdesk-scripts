@@ -3,6 +3,8 @@
 property useFileURL : false
 -- use relative or absolute path?
 property useRelativePath : true
+-- use relative to .bib file without asking the user?
+property relativeToBib : true
 -- delete Bibdesk-entry for linked files/URLs after converting?
 property deleteLinkedFiles : true
 -- ignore DOI URLs when converting URLs?
@@ -25,13 +27,20 @@ tell application "BibDesk"
 		return
 	end if
 	
-	tell document 1
-		-- Christiaan's solution:
-		-- set theDocDir to my containerPath(get file of it)
-		-- Tilman's alternative: 
-		-- need to get the basedirectory only, but containerPath doesn't work (errors)
-		set PathToFile to (choose folder with prompt "Choose folder of .bib-File to edit ...")
-		set theDocDir to POSIX path of PathToFile
+	set theDocument to document 1
+	tell theDocument
+		
+		if relativeToBib then
+			set theDocFile to the file of theDocument
+			set theDocDir to my containerPath(theDocFile)
+		else
+			-- Christiaan's solution:
+			-- set theDocDir to my containerPath(get file of it)
+			-- Tilman's alternative: 
+			-- need to get the basedirectory only, but containerPath doesn't work (errors)
+			set PathToFile to (choose folder with prompt "Choose folder of .bib-File to edit ...")
+			set theDocDir to POSIX path of PathToFile
+		end if
 		
 		repeat with thePub in publications
 			tell thePub
@@ -97,7 +106,7 @@ end tell
 
 on containerPath(theFile)
 	tell application "Finder"
-		set theContainer to get container of (theFile as file)
+		set theContainer to get container of (theFile as alias)
 		return POSIX path of (theContainer as alias)
 	end tell
 end containerPath
