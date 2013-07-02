@@ -75,10 +75,16 @@ tell application "BibDesk"
 				if deleteLinkedFiles then delete linked files
 				
 				-- convert linked URLs
+				set urlFieldValue to the value of field "Url"
 				set allLinkedUrls to (get linked URLs)
 				set linkedUrls to {}
 				repeat with theURL in my allLinkedUrls
-					if not ignoreDoi or (theURL as text does not contain "dx.doi.org") then
+					-- avoid repeating URL field
+					set dupUrlField to (theURL as text is equal to urlFieldValue)
+					-- ignore DOI entries if selected
+					set ignoreAsDoi to (ignoreDoi and ((theURL as text) contains "dx.doi.org"))
+					if not dupUrlField and not ignoreAsDoi then
+						-- add to list
 						set end of linkedUrls to theURL
 					end if
 				end repeat
