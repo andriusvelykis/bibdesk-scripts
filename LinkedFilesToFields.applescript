@@ -5,6 +5,8 @@ property useFileURL : false
 property useRelativePath : true
 -- delete Bibdesk-entry for linked files/URLs after converting?
 property deleteLinkedFiles : true
+-- ignore DOI URLs when converting URLs?
+property ignoreDoi : true
 
 -- how should the bibtex-entry for file links be called ?
 set FileLinkEntry to "Local-Url"
@@ -64,9 +66,17 @@ tell application "BibDesk"
 				if deleteLinkedFiles then delete linked files
 				
 				-- convert linked URLs
-				set theCount to count of (get linked URLs)
+				set allLinkedUrls to (get linked URLs)
+				set linkedUrls to {}
+				repeat with theURL in my allLinkedUrls
+					if not ignoreDoi or (theURL as text does not contain "dx.doi.org") then
+						set end of linkedUrls to theURL
+					end if
+				end repeat
+				
+				set theCount to count of linkedUrls
 				repeat with i from 1 to theCount
-					set theURL to item i of (get linked URLs)
+					set theURL to item i of linkedUrls
 					
 					if (theCount > 1) and (i > 1) then
 						set theFieldName to UrlLinkEntry & UrlLinkEntryMultiDelim & i
