@@ -65,7 +65,11 @@ tell application "BibDesk"
 						else
 							set theFieldName to FileLinkEntry
 						end if
-						set the value of field theFieldName to thePath
+						
+						-- if the value has changed, set it (this will change modification date)
+						if thePath is not equal to (get value of field theFieldName) then
+							set the value of field theFieldName to thePath
+						end if
 					on error errmesg number errn
 						display dialog errmesg & return & return & "error number: " & Â
 							(errn as text)
@@ -98,9 +102,13 @@ tell application "BibDesk"
 					else
 						set theFieldName to UrlLinkEntry
 					end if
-					-- errors produced by:
-					-- set the value of field theFieldName to theURL
-					set the value of field theFieldName to theURL as text --that works
+					
+					set urlText to theURL as text
+					
+					-- if the value has changed, set it (this will change modification date)
+					if urlText is not equal to (get value of field theFieldName) then
+						set the value of field theFieldName to urlText
+					end if
 				end repeat
 				
 				if deleteLinkedFiles then delete linked URLs
