@@ -46,7 +46,18 @@ tell application "BibDesk"
 			set sortRecord to {key:sortKey, value:thePub}
 			set the end of sortPubs to sortRecord
 		end repeat
-				
+		
+		
+		-- perform sort on the sort keys
+		set sortPubs to my bubbleSortKey(sortPubs)
+		
+		-- get the values from sorted records
+		set sortResults to {}
+		repeat with thePubRec in sortPubs
+			set the end of sortResults to (value of thePubRec)
+		end repeat
+		
+		
 		-- move publications to correct positions
 		set theCount to count of sortResults
 		repeat with i from 1 to theCount
