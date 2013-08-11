@@ -37,6 +37,11 @@ tell application "BibDesk"
 				set authorName to the abbreviated normalized name of the authorOrEditor
 			end if
 			
+			-- remove {} characters that can be in the author names and mess up the order
+			if ((offset of "{" in authorName) ³ 0 or (offset of "}" in authorName) ³ 0) then
+				set authorName to my replaceChars(my replaceChars(authorName, "}", ""), "{", "")
+			end if
+			
 			set theYear to the value of field "Year" of thePub
 			set citeKey to the cite key of thePub
 			
@@ -86,3 +91,14 @@ on bubbleSortKey(theList)
 	end repeat
 	return bs's alist
 end bubbleSortKey
+
+
+-- taken from http://www.macosxautomation.com/applescript/sbrt/sbrt-06.html
+on replaceChars(this_text, search_string, replacement_string)
+	set AppleScript's text item delimiters to the search_string
+	set the item_list to every text item of this_text
+	set AppleScript's text item delimiters to the replacement_string
+	set this_text to the item_list as string
+	set AppleScript's text item delimiters to ""
+	return this_text
+end replaceChars
